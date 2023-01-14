@@ -7,6 +7,7 @@ import useWindowDimensions from "../Components/useWindowDimensions";
 import { makeImagePath } from "../utilities";
 
 const Wrapper = styled.div`
+  height: 150vh;
   background-color: ${(props) => props.theme.black.veryDark};
 `;
 
@@ -62,19 +63,46 @@ const Box = styled(motion.div)<{ bgphoto: string }>`
   background-position: center center;
   height: 200px;
   font-size: 66px;
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
 `;
 
-const rowVariants = {
-  hidden: {
-    x: window.outerWidth + 5,
+const Info = styled(motion.div)`
+  position: absolute;
+  padding: 10px;
+  width: 100%;
+  opacity: 0;
+  background-color: ${(props) => props.theme.black.lighter};
+  bottom: 0;
+  h4 {
+    text-align: center;
+    font-size: 18px;
+  }
+`;
+
+const BoxVariants = {
+  normal: {
+    scale: 1,
   },
-  visible: {
-    x: 0,
-  },
-  exit: {
-    x: -window.outerWidth - 5,
+  hover: {
+    scale: 1.5,
+    y: -100,
+    transition: { delay: 0.3, type: "tween", duration: 0.3 },
   },
 };
+
+const infoVariants = {
+  hover: {
+    opacity: 1,
+    transition: { delay: 0.3, type: "tween", duration: 0.3 },
+  },
+};
+
+const offset = 6;
 
 function Home() {
   const width = useWindowDimensions();
@@ -96,7 +124,6 @@ function Home() {
     }
   };
   const toggleLeaving = () => setLeaving((prev) => !prev);
-  const offset = 6;
   return (
     <Wrapper>
       {isLoading ? (
@@ -127,9 +154,17 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                      variants={BoxVariants}
+                      initial="normal"
+                      whileHover="hover"
+                      transition={{ type: "tween" }}
                       key={movie.id}
                       bgphoto={makeImagePath(movie.backdrop_path, "w500")}
-                    ></Box>
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
                   ))}
               </Row>
             </AnimatePresence>
