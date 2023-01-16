@@ -28,8 +28,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "cp build/index.html build/404.html",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -52,5 +55,6 @@
   "devDependencies": {
     "@types/react-beautiful-dnd": "^13.1.3",
     "@types/styled-components": "^5.1.26"
-  }
+  },
+  "homepage": "https://verobeach7.github.io/reactjs-netflix"
 }

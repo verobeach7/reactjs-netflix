@@ -1,6 +1,7 @@
 import { motion, useAnimation, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link, useMatch } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Nav = styled(motion.nav)`
@@ -65,7 +66,7 @@ const Circle = styled(motion.span)`
   background-color: ${(props) => props.theme.red};
 `;
 
-const Search = styled.span`
+const Search = styled.form`
   color: white;
   display: flex;
   align-items: center;
@@ -107,6 +108,10 @@ const navVariants = {
   scroll: { backgroundColor: "#141414" },
 };
 
+interface IForm {
+  keyword: string;
+}
+
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const homeMatch = useMatch("/");
@@ -125,6 +130,7 @@ function Header() {
       // trigger the open animation
       inputAnimation.start({ scaleX: 1 });
     }
+    setFocus("keyword");
     setSearchOpen((prev) => !prev);
   };
   useEffect(() => {
@@ -135,7 +141,14 @@ function Header() {
         navAnimation.start("top");
       }
     });
-  }, []);
+  }, [scrollY, navAnimation]);
+  const navigate = useNavigate();
+  const { register, handleSubmit, setFocus, setValue } = useForm<IForm>();
+  const onValid = (data: IForm) => {
+    // console.log(data);
+    navigate(`/search?keyword=${data.keyword}`);
+    setValue("keyword", "");
+  };
   return (
     <Nav variants={navVariants} initial="top" animate={navAnimation}>
       <Col>
@@ -163,7 +176,7 @@ function Header() {
         </Items>
       </Col>
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)}>
           <motion.svg
             onClick={toggleSearch}
             animate={{ x: searchOpen ? -145 : 0 }}
@@ -179,10 +192,11 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            {...register("keyword", { required: true, minLength: 2 })}
             animate={inputAnimation}
             initial={{ scaleX: 0 }}
             transition={{ type: "linear" }}
-            placeholder="Search for movie or tv show..."
+            placeholder="제목, 사람"
           />
         </Search>
       </Col>
